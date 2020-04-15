@@ -1,0 +1,148 @@
+---
+title: "Model Creation for Forecasting CA, NY, LA, NYC"
+output: html_notebook
+---
+
+In order to model Gompertz, we need to install the following package.
+```{r}
+install.packages("easynls")
+```
+
+We start first with model creation for California COVID-19 cumulative cases.
+
+
+California State Model Creation
+
+```{r}
+cadata <- read.table("CaliforniaData.csv", header=TRUE,sep=",")
+attach(cadata)
+library(easynls)
+Days = Time
+Cases2 = cases
+mydata1 =cbind(Days, Cases2)
+mydata2 = as.data.frame(mydata1[1:41,])
+plot(mydata2$Days,mydata2$Cases2)
+```
+
+Next, we ready to model. Note that model = 10 is the Gompertz model.
+
+Parameter a: We estimated parameter using Italy as a benchmark. To do this, we create a ratio by taking the current number of cases and dividing by Italy's population: 156,363 / 60,461,826 = .0025861442 Italy population found from Eurostat and  https://www.worldometers.info/coronavirus/country/italy/. Note that this number has since changed.
+
+We take the ratio of .0025861442 multiply California population of about 37 million, retrieved from Census. This gets us our parameter a.
+
+
+```{r}
+Model2 = nlsfit(mydata2, model = 10, start = c(a = 96170, b = 2, c = .1))
+Model2
+```
+
+```{r}
+nlsplot(mydata2, model = 10, start = c(a = 96170, b = 2, c = .1), xlab = "Days", ylab = "Cases2", position = 1)
+```
+
+Therefore, our California Model is as follows:
+
+                                            (-.06847127*t)
+                              (-15.33547*e^)
+Cumulative Cases = 54690.86*e^
+
+
+
+
+
+New York State Model Creation
+
+```{r}
+nydata <- read.table("NYData.csv", header=TRUE,sep=",")
+attach(nydata)
+Days = Time
+Cases2 = Cases
+mydata1 = cbind(Days, Cases2)
+mydata2 = as.data.frame(mydata1[1:41,])
+plot(mydata2$Days,mydata2$Cases2)
+```
+
+Parameter a, estimated by multiplying Italy ratio of .002586414 with 19 million (retrievd from Census) = 50115.
+
+```{r}
+Model2 = nlsfit(mydata2, model = 10, start = c(a = 50115, b = 2, c = .1))
+Model2
+```
+
+
+```{r}
+nlsplot(mydata2, model = 10, start = c(a = 50115, b = 2, c = .1), xlab = "Days", ylab = "Cases2", position = 1)
+```
+Therefore, our New York Model is as follows:
+
+			                      (-.08450772*t)
+		          (-19.02339*e^)
+y = 304531.9*e^
+
+
+
+Los Angeles Model Creation
+
+```{r}
+LAdata <- read.table("LAdata.csv", header=TRUE,sep=",")
+attach(LAdata)
+plot(Time, Cases)
+library(easynls)
+Days = Time
+Cases2 = Cases
+mydata1 =cbind(Days, Cases2)
+mydata2 = as.data.frame(mydata1[1:41,])
+plot(mydata2$Days,mydata2$Cases2)
+```
+Parameter a, for both cities, we decided to double the ratio the Italy ratio of .002586414 to .00517228, due to population density. We multiplied .00517228 with about 39 million (retrievd from Census) = 20639.
+
+```{r}
+Model2 = nlsfit(mydata2, model = 10, start = c(a = 20639, b = 1, c = .1))
+Model2
+```
+
+```{r}
+nlsplot(mydata2, model = 10, start = c(a =  20639, b = 1, c = .1), xlab = "Days", ylab = "Cases2", position = 1)
+```
+Therefore, our Los Angeles Model is as follows:
+
+                        (-.08934937*t)
+            (-27.64857*e^)
+y = 17394.3*e^
+
+
+
+New York City Model Creation
+
+```{r}
+NYCdata <- read.table("NYCityData.csv", header=TRUE,sep=",")
+attach(NYCdata)
+library(easynls)
+Days = Time
+Cases2 = cases
+mydata1 =cbind(Days, Cases2)
+mydata2 = as.data.frame(mydata1[1:41,])
+plot(mydata2$Days,mydata2$Cases2)
+
+```
+
+Parameter a, for both cities, we decided to double the ratio the Italy ratio of .002586414 to .00517228, due to population density. We multiplied .00517228 with about 84 million (retrievd from Census) = 43442.
+
+```{r}
+Model2 = nlsfit(mydata2, model = 10, start = c(a = 43442, b = 2, c = .1))
+Model2
+```
+
+
+```{r}
+nlsplot(mydata2, model = 10, start = c(a = 43442, b = 2, c = .1), xlab = "Days", ylab = "Cases2", position = 1)
+```
+Therefore, our model for New York City is as follows:
+
+				                  (-.08642902*t)
+		          (-18.1375*e^)
+y = 156117.8*e^
+
+
+
+
